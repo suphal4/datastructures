@@ -1,0 +1,224 @@
+\documentclass[a4]{article}
+\usepackage{gnuplottex}
+\usepackage{csvsimple}
+\usepackage{subcaption}
+\usepackage{amsmath}
+
+\title{COMP26120 Lab 3 Report}
+\author{Suphal Sharma}
+\begin{document}
+\maketitle
+
+\section{Experiment 1}
+
+\subsection{Hypothesis}
+
+For finding, deleting and inserting data in a hash table through random inputs, the expected time complexity is O(1). On ample randomization the data generated would be such that collisions on hashing will be rare due to the uniqueness of the inputs. The need to relocate indices will be removed which will also mean saving time used to resolve collisions. \\
+
+Therefore, for each insertion or any other function after using a good enough hash the behaviour will be n times O(1) which is equal to O(1). 
+
+
+\subsection{Design}
+
+To get sufficient randomization of data a good choice was to use the input file large/henry/dict which had around 203,000 strings. For testing, five different sizes of files were inputted using the above mentioned dictionary, the sizes being 10k, 20k, 30k, 40k, 50k. For each size, five different files were used to get a good sample size.\\
+
+The program Spell checker was run on each of these files.
+UNIX time command was used which helped summing the outputs of user and sys values to measure the time taken for the program to be executed. \\
+
+Dictionaries were generated and the times were computed automatically by using the shell scripts shown in Appendix B. \\
+
+The commands used on terminal are as follows :- \\
+\\
+sh experiment/random1.sh \\
+sh experiment/exp1.sh \\
+\subsection{Results}
+ {\bf Gnuplot} has been used to plot results of the above stated experiment. {\bf Fit} function has been used to best fit a line $f(x) = m \times x + c$, also calculating values for $m$ and $c$ while at it. \\
+The results are shown above in the Figure~\ref{fig:hashset} and the raw data can be found in Appendix A.
+\begin{figure}
+\begin{center}
+\begin{gnuplot}[terminal=jpeg, terminaloptions={size 600,400 font "Arial,9"}]
+max(x, y) = (x > y ? x:y)
+min(x, y) = (x < y ? x:y)
+set title "Time taken to sort files"
+set ylabel "Time in Seconds"
+set xlabel "Size of Dictionary"
+set xrange [9000:51000]
+f(x) = m * x + c
+
+fit f(x) 'exp1.dat' using  1:2 via m, c
+
+mc_value = sprintf("\n\nParameters values \nm = %fc = %f", m, c)
+set label 1 at 37000,0.06 mc_value
+
+plot "exp1.dat" using 1:2 t "time", f(x) ls 2 t 'Best fit line'
+set out
+\end{gnuplot}
+\end{center}
+\caption{Time taken to find a string in a dictionary with randomized inputs, with best fit line $f(x) = mx + c$ shown and values for the parameters $m$ and $c$}
+\label{fig:hashset}
+\end{figure}
+\subsection{Discussion}
+Concluding from the results , we can say our experiment proves the hypothesis. The graph plotted in figure 1 is used for n insertions. Hence, O(n)/n = O(1).\\
+Amortized analysis discussed here take into account the total insertions but not factors like probability,etc. 
+{\bf Therefore, the hypothesis is true.} \\
+\\
+\section{Experiment 2}
+
+
+\subsection{Theoretical Average Case}
+
+\subsubsection{Hypothesis}
+Over insertion of random data, the time complexity is O(logn).
+Theoretically, it should be O(logn) as :
+Values to be inserted, first need to be checked if they already exist in the tree. We then insert the values also taking in consideration the height and size of the tree.  For each value we need to compare and go through left and right sub trees. While inserting takes O(1) time, this searching process results in O(logn) complexity.\\
+
+Overall Insertion of Binary Search Tree:- \\
+$\implies O(log n) + O(1)$\\
+$\implies O(log n)$
+                                        
+\subsubsection{Design}
+To get sufficient randomization of data a good choice was to use the input file large/henry/dict which had around 203,000 strings. For testing, five different sizes of files were inputted using the above mentioned dictionary, the sizes being 10k, 20k, 30k, 40k, 50k. For each size, five different files were used to get a good sample size.\\
+The program Spell checker was run on each of these files.
+UNIX time command was used which helped summing the outputs of user and sys values to measure the time taken for the program to be executed. \\
+Dictionaries were generated and the times were computed automatically by using the shell scripts shown in Appendix B. \\
+The commands used on terminal are as follows :- \\
+sh experiment/random1.sh \\
+sh experiment/exp2.sh \\
+
+
+
+\subsubsection{Results}
+{\bf Gnuplot} has been used to plot results of the above stated experiment. {\bf Fit} function has been used to best fit a line  $f(x) = mxlogx + c$. The results are shown in Figure~\ref{fig:random set} . The raw data can be seen in Appendix~\ref{app:data2}
+\begin{figure}
+\begin{center}
+\begin{gnuplot}[terminal=jpeg, terminaloptions={size 600,600 font "Arial,10"}]
+max(x, y) = (x > y ? x:y)
+min(x, y) = (x < y ? x:y)
+set title "Time taken to insert elements"
+set ylabel "Time in Seconds"
+set xlabel "Size of Dictionary"
+set logscale x
+set xrange [9000:51000]
+f(x) = m * x * log(x) + c
+
+fit f(x) 'exp_2_none.dat' using  1:2 via m, c
+
+mc_value = sprintf("\n\nParameters values \nm = %fc = %f", m, c)
+set label 1 at 27000,0.3 mc_value
+
+plot "exp_2_none.dat" using 1:2 t "time", f(x) ls 2 t 'Best fit line'
+set out
+\end{gnuplot}
+\end{center}
+\caption{Time taken to insert the elements, with best fit line $f(x) = mlogx + c$ shown}
+\label{fig:random set}
+\end{figure}
+
+\subsubsection{Discussion}
+Concluding from the results , we can say our experiment proves the hypothesis. The graph plotted in figure 2 is used for n insertions. The curve produced is similar to O(nlogn). So, we can apply O(nlogn)/n = O(logn).{\bf Therefore, the hypothesis is true.} 
+\\
+\subsection{Theoretical Worst Case}
+
+\subsubsection{Hypothesis}
+For sorted data insertion, the time complexity  is O(n).
+Theoretically, it is O(n) as: Each value needs to be insterted based on the comparisons made on  left and right  subtrees. This creates a dependency over the height of tree. Travelling the entire height of tree is required in sorted data searching because skewed tree could be formed taking O(n) time and inserting taking O(1) time.\\
+Hence overall time complexity is:
+O(n) +O(1)=O(n)
+
+\subsubsection{Design}
+To get sufficient randomization of data a good choice was to use the input file large/henry/dict which had around 203,000 strings. For testing, five different sizes of files were inputted using the above mentioned dictionary, the sizes being 10k, 20k, 30k, 40k, 50k. For each size, five different files were used to get a good sample size.\\
+The program Spell checker was run on each of these files.
+UNIX time command was used which helped summing the outputs of user and sys values to measure the time taken for the program to be executed. \\
+Dictionaries were generated and the times were computed automatically by using the shell scripts shown in Appendix B. \\
+The commands used on terminal are as follows :- \\
+sh experiment/random1.sh \\
+sh experiment/exp2.sh \\
+
+
+
+\subsubsection{Results}
+{\bf Gnuplot} has been used to plot results of the above stated experiment. {\bf Fit} function has been used to best fit a line  $f(x) = x*x + c$. The results are shown in Figure~\ref{fig:sorted set} . The raw data can be seen in Appendix~\ref{app:data2}
+\begin{figure}
+\begin{center}
+\begin{gnuplot}[terminal=jpeg, terminaloptions={size 600,600 font "Arial,10"}]
+max(x, y) = (x > y ? x:y)
+min(x, y) = (x < y ? x:y)
+set title "Time taken to insert elements"
+set ylabel "Time in Seconds"
+set xlabel "Size of Dictionary"
+
+set xrange [9000:51000]
+f(x) = m * x**2 + c
+c=0.1
+fit f(x) 'exp_2_sorted.dat' using  1:2 via m, c
+
+mc_value = sprintf("\n\nParameters values \nm = %fc = %f", m, c)
+set label 1 at 35000,0.2 mc_value
+
+plot "exp_2_sorted.dat" using 1:2 t "time", f(x) ls 2 t 'Best fit line'
+set out
+\end{gnuplot}
+\end{center}
+\caption{Time taken to insert the elements, with best fit line $f(x) = mx^2 + c$ shown}
+\label{fig:sorted set}
+\end{figure}
+
+
+\subsubsection{Discussion}
+Concluding from the results , we can say our experiment proves the hypothesis. The graph plotted in figure 3 is used for n insertions. The curve produced is similar to O(n*n). So, we can apply O(n*n)/n = O(n).{\bf Therefore, the hypothesis is true.} 
+\\
+
+
+\section{Conclusion}
+Based on the above 2 experiments, we can say that hash table insertion is easier and faster to implement than the binary search tree insertion. Hence, we conclude that hash table is the better alternative for data insertion.
+
+
+\appendix
+\section{Raw Data for Experiment 1}
+\label{app:data}
+
+\csvreader[
+tabular={|l|l|},
+table head={\hline \multicolumn{2}{|c|}{Random Data} \\ \hline Size & Time (s)\\\hline},
+late after line=\\\hline,
+no head]{exp1.csv}{}%
+{\csvcoli & \csvcolii}
+
+\section{Shell Scripts for Experiment 1}
+\label{app:shell_scripts}
+\subsection{Generating Dictionaries}
+\verbatiminput{random1.sh}
+
+\subsection{Script for Computing Run Times}
+\verbatiminput{exp1.sh}
+
+\section{Raw Data for Experiment 2}
+\label{app:data2}
+
+\csvreader[
+tabular={|l|l|},
+table head={\hline \multicolumn{2}{|c|}{Sorted Data} \\ \hline Size & Time (s)\\\hline},
+late after line=\\\hline,
+no head]{exp_2_sorted.csv}{}%
+{\csvcoli & \csvcolii}
+
+\csvreader[
+tabular={|l|l|},
+table head={\hline \multicolumn{2}{|c|}{Random Data} \\ \hline Size & Time (s)\\\hline},
+late after line=\\\hline,
+no head]{exp_2_none.csv}{}%
+{\csvcoli & \csvcolii}
+\section{Shell Scripts for Experiment 2}
+\label{app:shell_scripts2}
+\subsection{Generating Dictionaries}
+\verbatiminput{random1.sh}
+
+\subsection{Script for Computing Run Times}
+\verbatiminput{exp2.sh}
+
+
+
+
+%% And raw data or code scripts you want to present should be included as appendices.
+
+\end{document}
